@@ -12,10 +12,10 @@ def correct_mqpar_file(input_file, output_file, folder_number):
         for line in f:
             if line.strip().startswith('<fastaFilePath>'):
                 start = line.split('<')[0]
-                f_out.write(start + '<fastaFilePath>' + fr'D:\Data\Bernhard\MaxQuant_iterative\MaxQuant_iterative\Data\Run\run_{folder_number}\uniprot_sprot.fasta' + '</fastaFilePath>\n')
+                f_out.write(start + '<fastaFilePath>' + fr'.\Data\Run\run_{folder_number}\uniprot_sprot.fasta' + '</fastaFilePath>\n')
             elif line.strip().startswith('<fixedCombinedFolder>'):
                 start = line.split('<')[0]
-                f_out.write(start + fr'<fixedCombinedFolder>D:\Data\Bernhard\MaxQuant_iterative\MaxQuant_iterative\Data\Run\run_{folder_number}</fixedCombinedFolder>'+'\n')
+                f_out.write(start + fr'<fixedCombinedFolder>.\Data\Run\run_{folder_number}</fixedCombinedFolder>'+'\n')
             else:
                 f_out.write(line)
 
