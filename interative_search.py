@@ -2,6 +2,7 @@ import subprocess
 import os
 from Bio import SeqIO
 import re
+import glob
 
 
 # https://bioinformatics.stackexchange.com/questions/7212/what-is-the-purpose-of-folder-locations-in-maxquant
@@ -35,11 +36,22 @@ def write_new_fasta(protein_group_file, fasta_input_file, fasta_output_file):
     out_handle.close()
 
 
+os.makedirs(f'./Data', exist_ok=True)
+os.makedirs(f'./Data/Run', exist_ok=True)
 os.makedirs(f'./Data/Run/run_1', exist_ok=True)
+os.makedirs(f'./Data/Start', exist_ok=True)
+
+print('Please place MS-file (.d), FASTA-file (.fasta) and the mqpar (mqpar.xml) in the folder ./Data/Start !')
+input('Press any key to continue...')
+
 correct_mqpar_file(f'./Data/Start/mqpar.xml','./Data/Run/run_1/mqpar.xml', folder_number=1)
+fasta_file = glob.glob('./Data/Start/*.fasta')[0]
+os.replace(f'./Data/Start/' + fasta_file, './Data/Run/run_1/' + fasta_file)
+
 
 path_to_MaxQuant = r'.\MaxQuant_v2.4.14.0\bin\MaxQuantCmd.exe'
 folder_number = 1
+
 for k in range(5):
     print('Run '+str(k))
     subprocess.call(path_to_MaxQuant + f' ./Data/Run/run_{folder_number}/mqpar.xml', shell=True)
