@@ -46,6 +46,7 @@ input('Press any key to continue...')
 
 correct_mqpar_file(f'./Data/Start/mqpar.xml','./Data/Run/run_1/mqpar.xml', folder_number=1)
 fasta_file = glob.glob('./Data/Start/*.fasta')[0]
+fasta_file = fasta_file.split(os.sep)[-1]
 os.replace(f'./Data/Start/' + fasta_file, './Data/Run/run_1/' + fasta_file)
 
 
