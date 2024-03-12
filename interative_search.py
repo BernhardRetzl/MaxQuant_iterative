@@ -3,6 +3,7 @@ import os
 from Bio import SeqIO
 import re
 import PySimpleGUI as psg
+import time
 
 
 # https://bioinformatics.stackexchange.com/questions/7212/what-is-the-purpose-of-folder-locations-in-maxquant
@@ -68,17 +69,21 @@ working_directory = os.getcwd().replace('\\', '/')
 
 
 threads_in_use = correct_mqpar_file(path_to_mqpar_file,'./Data/Run/run_1/mqpar.xml', folder_number=1, fasta_file_name=fasta_file_name, path_to_ms_file=path_to_ms_file, working_directory=working_directory)
-print('Attention ' + threads_in_use + ' threads in use!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+print('\033[31m' + "Attention " + threads_in_use + ' threads in use!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 os.replace(path_to_fasta_file, './Data/Run/run_1/' + fasta_file_name)
 
 
-folder_number = 1
-for k in range(5):
-    print('Run '+str(k))
-    subprocess.call(path_to_MaxQuant + f' ./Data/Run/run_{folder_number}/mqpar.xml', shell=False)
-    folder_number += 1
-    os.makedirs(f'./Data/Run/run_{folder_number}', exist_ok=True)
-    write_new_fasta(protein_group_file=f'./Data/Run/run_{folder_number-1}/combined/txt/proteinGroups.txt',
-                    fasta_input_file=f'./Data/Run/run_{folder_number-1}/uniprot_sprot.fasta',
-                    fasta_output_file=f'./Data/Run/run_{folder_number}/uniprot_sprot.fasta')
-    correct_mqpar_file(f'./Data/Run/run_{folder_number-1}/mqpar.xml', f'./Data/Run/run_{folder_number}/mqpar.xml', folder_number, fasta_file_name)
+with open('log.txt', 'wt') as log_file:
+    folder_number = 1
+    for k in range(5):
+        start = time.time()
+        print('Run '+str(k))
+        subprocess.call(path_to_MaxQuant + f' ./Data/Run/run_{folder_number}/mqpar.xml', shell=False)
+        folder_number += 1
+        os.makedirs(f'./Data/Run/run_{folder_number}', exist_ok=True)
+        write_new_fasta(protein_group_file=f'./Data/Run/run_{folder_number-1}/combined/txt/proteinGroups.txt',
+                        fasta_input_file=f'./Data/Run/run_{folder_number-1}/uniprot_sprot.fasta',
+                        fasta_output_file=f'./Data/Run/run_{folder_number}/uniprot_sprot.fasta')
+        correct_mqpar_file(f'./Data/Run/run_{folder_number-1}/mqpar.xml', f'./Data/Run/run_{folder_number}/mqpar.xml', folder_number, fasta_file_name)
+        end = time.time()
+        log_file.write('Iteration: '+str(k)+' Time: '+str(end-start)+' seconds' + '\n')
