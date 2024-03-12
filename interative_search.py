@@ -75,7 +75,7 @@ os.replace(path_to_fasta_file, './Data/Run/run_1/' + fasta_file_name)
 folder_number = 1
 for k in range(5):
     print('Run '+str(k))
-    subprocess.call(path_to_MaxQuant + f' ./Data/Run/run_{folder_number}/mqpar.xml', shell=True)
+    subprocess.call(path_to_MaxQuant + f' ./Data/Run/run_{folder_number}/mqpar.xml', shell=False)
     folder_number += 1
     os.makedirs(f'./Data/Run/run_{folder_number}', exist_ok=True)
     write_new_fasta(protein_group_file=f'./Data/Run/run_{folder_number-1}/combined/txt/proteinGroups.txt',
