@@ -15,10 +15,10 @@ def correct_mqpar_file(input_file, output_file, folder_number, fasta_file_name, 
         for line in f:
             if line.strip().startswith('<fastaFilePath>'):
                 start = line.split('<')[0]
-                f_out.write(start + '<fastaFilePath>' + fr'{working_directory}/Data/Run/run_{folder_number}/{fasta_file_name}' + '</fastaFilePath>\n')
+                f_out.write(start + '<fastaFilePath>' + fr'{working_directory}\Data\Run\run_{folder_number}\{fasta_file_name}' + '</fastaFilePath>\n')
             elif line.strip().startswith('<fixedCombinedFolder>'):
                 start = line.split('<')[0]
-                f_out.write(start + fr'<fixedCombinedFolder>{working_directory}/Data/Run/run_{folder_number}</fixedCombinedFolder>'+'\n')
+                f_out.write(start + fr'<fixedCombinedFolder>{working_directory}\Data\Run\run_{folder_number}</fixedCombinedFolder>'+'\n')
             elif line.strip().startswith('<filePaths>'):
                 f_out.write(line)
                 start = f.readline().split('<')[0]
@@ -59,13 +59,14 @@ def get_paths_for_run():
     path_to_mqpar_file = psg.popup_get_file(r'Please specify the path to the mqpar.xml file',  title="File selector")
     path_to_fasta_file = psg.popup_get_file(r'Please specify the path to the FASTA-file',  title="File selector")
     path_to_ms_file = psg.popup_get_folder(r'Please specify the path to the MS (.d) file',  title="Folder selector")
+    path_to_ms_file = path_to_ms_file.replace('/', '\\')
     fasta_file_name = path_to_fasta_file.split('/')[-1]
     return path_to_MaxQuant, path_to_mqpar_file, path_to_fasta_file, path_to_ms_file, fasta_file_name
 
 
 make_folders()
 path_to_MaxQuant, path_to_mqpar_file, path_to_fasta_file, path_to_ms_file, fasta_file_name = get_paths_for_run()
-working_directory = os.getcwd().replace('\\', '/')
+working_directory = os.getcwd()
 
 
 threads_in_use = correct_mqpar_file(path_to_mqpar_file,'./Data/Run/run_1/mqpar.xml', folder_number=1, fasta_file_name=fasta_file_name, path_to_ms_file=path_to_ms_file, working_directory=working_directory)
@@ -84,6 +85,18 @@ with open('log.txt', 'wt') as log_file:
         write_new_fasta(protein_group_file=f'./Data/Run/run_{folder_number-1}/combined/txt/proteinGroups.txt',
                         fasta_input_file=f'./Data/Run/run_{folder_number-1}/uniprot_sprot.fasta',
                         fasta_output_file=f'./Data/Run/run_{folder_number}/uniprot_sprot.fasta')
-        correct_mqpar_file(f'./Data/Run/run_{folder_number-1}/mqpar.xml', f'./Data/Run/run_{folder_number}/mqpar.xml', folder_number, fasta_file_name)
+        correct_mqpar_file(f'./Data/Run/run_{folder_number-1}/mqpar.xml', f'./Data/Run/run_{folder_number}/mqpar.xml', folder_number, fasta_file_name, path_to_ms_file, working_directory)
         end = time.time()
         log_file.write('Iteration: '+str(k)+' Time: '+str(end-start)+' seconds' + '\n')
+
+
+
+import smtplib
+
+
+email = 'retzl.bernhard@gmail.com'
+receiver_email = 'retzl.bernhard@gmail.com'
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(email, "bfpj wuka mdzz gbxp")
+server.sendmail(email, receiver_email, 'Max quant finished')
